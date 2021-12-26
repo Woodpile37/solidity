@@ -120,6 +120,16 @@ SortPointer smtSort(frontend::Type const& _type)
 
 			tupleName += "_array";
 		}
+		else if (isMapping(_type))
+		{
+			tupleName = _type.toString(true);
+			while (tupleName.find(" => ") != string::npos)
+				tupleName.replace(tupleName.find(" => "), 4, "");
+			while (tupleName.find('(') != string::npos)
+				tupleName.replace(tupleName.find('('), 1, "$");
+			while (tupleName.find(')') != string::npos)
+				tupleName.replace(tupleName.find(')'), 1, "$");
+		}
 		else
 			tupleName = _type.toString(true);
 
