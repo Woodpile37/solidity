@@ -74,6 +74,9 @@ function gnosis_safe_test
     # TODO: Remove this when Hardhat adjusts heuristics for IR (https://github.com/nomiclabs/hardhat/issues/2115).
     sed -i "s|\(it\)\(('should not allow to call setup on singleton'\)|\1.skip\2|g" test/core/GnosisSafe.Setup.spec.ts
 
+    # TODO: Remove this when Gnosis merges https://github.com/gnosis/safe-contracts/pull/394
+    sed -i "s|\(function isValidSignature(bytes \)calldata\( _data, bytes \)calldata\( _signature)\)|\1memory\2memory\3|g" contracts/handler/CompatibilityFallbackHandler.sol
+
     neutralize_package_lock
     neutralize_package_json_hooks
     force_hardhat_compiler_binary "$config_file" "$BINARY_TYPE" "$BINARY_PATH"
