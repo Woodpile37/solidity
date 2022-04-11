@@ -136,6 +136,13 @@ The output of the above looks like the following (trimmed):
        }
     }
 
+
+Members of event
+================
+
+- ``event.selector()``: The signature is defined as the canonical expression of the basic prototype without data location specifier. It is the the Keccak-256 hash of the signature of the event.
+
+
 Additional Resources for Understanding Events
 ==============================================
 
