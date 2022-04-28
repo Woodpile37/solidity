@@ -18,6 +18,8 @@
 
 #include <libsolidity/formal/CHC.h>
 
+#include <libsolidity/formal/ModelChecker.h>
+
 #ifdef HAVE_Z3
 #include <libsmtutil/Z3CHCInterface.h>
 #endif
@@ -73,8 +75,8 @@ CHC::CHC(
 #else
 	usesZ3 = false;
 #endif
-	if (!usesZ3 && m_settings.solvers.smtlib2)
-		m_interface = make_unique<CHCSmtLib2Interface>(_smtlib2Responses, _smtCallback, m_settings.timeout);
+	if (!usesZ3 && (m_settings.solvers.eld || m_settings.solvers.smtlib2))
+		m_interface = make_unique<CHCSmtLib2Interface>(_smtlib2Responses, _smtCallback, m_settings.solvers, m_settings.timeout);
 }
 
 void CHC::analyze(SourceUnit const& _source)
@@ -82,7 +84,11 @@ void CHC::analyze(SourceUnit const& _source)
 	if (!shouldAnalyze(_source))
 		return;
 
-	if (!m_settings.solvers.z3 && !m_settings.solvers.smtlib2)
+	if (
+		!m_settings.solvers.z3 &&
+		!m_settings.solvers.smtlib2 &&
+		!m_settings.solvers.eld
+	)
 	{
 		if (!m_noSolverWarning)
 		{
@@ -93,6 +99,20 @@ void CHC::analyze(SourceUnit const& _source)
 				"CHC analysis was not possible since no Horn solver was enabled."
 			);
 		}
+		return;
+	}
+
+	if (
+		m_settings.solvers == SMTSolverChoice::ELD() &&
+		!ModelChecker::availableSolvers().eld
+	)
+	{
+		m_errorReporter.warning(
+			7267_error,
+			SourceLocation(),
+			"CHC analysis was not possible since Eldarica was the only"
+			" Horn solver enabled, but it was not found in the system."
+		);
 		return;
 	}
 
@@ -112,7 +132,8 @@ void CHC::analyze(SourceUnit const& _source)
 
 	bool ranSolver = true;
 	// If ranSolver is true here it's because an SMT solver callback was
-	// actually given and the queries were solved.
+	// actually given and the queries were solved,
+	// or Eldarica was chosen and was present in the system.
 	if (auto const* smtLibInterface = dynamic_cast<CHCSmtLib2Interface const*>(m_interface.get()))
 		ranSolver = smtLibInterface->unhandledQueries().empty();
 	if (!ranSolver && !m_noSolverWarning)
