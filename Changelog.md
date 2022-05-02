@@ -2,6 +2,7 @@
 
 Important Bugfixes:
  * ABI Encoding: When ABI-encoding values from calldata that contain nested arrays, correctly validate the nested array length against ``calldatasize()`` in all cases.
+ * Type Checker: Only allow changing data location between ``memory`` and ``calldata`` when overriding external functions.
 
 
 Language Features:
