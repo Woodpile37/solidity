@@ -237,7 +237,7 @@ pair<smtutil::Expression, size_t> parseSExpression(string const& _data)
 		do
 		{
 			auto [symbArg, newPos] = parseSExpression(_data.substr(pos));
-			cout << symbArg.name
+			//cout << symbArg.name
 			exprArgs.emplace_back(move(symbArg));
 			pos += newPos;
 		} while (_data[pos] != ')');
