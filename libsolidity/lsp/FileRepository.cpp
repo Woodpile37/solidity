@@ -38,6 +38,7 @@ using solidity::util::Result;
 
 FileRepository::FileRepository(boost::filesystem::path _basePath): m_basePath(std::move(_basePath))
 {
+	m_includePaths.emplace_back(m_basePath / "node_modules");
 }
 
 string FileRepository::sourceUnitNameToUri(string const& _sourceUnitName) const
