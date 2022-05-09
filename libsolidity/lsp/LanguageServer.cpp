@@ -324,7 +324,7 @@ void LanguageServer::semanticTokensFull(MessageID _id, Json::Value const& _args)
 
 	compile();
 
-	auto const sourceName = m_fileRepository.clientPathToSourceUnitName(uri.as<string>());
+	auto const sourceName = m_fileRepository.uriToSourceUnitName(uri.as<string>());
 	SourceUnit const& ast = m_compilerStack.ast(sourceName);
 	m_compilerStack.charStream(sourceName);
 	SemanticTokensBuilder semanticTokensBuilder;

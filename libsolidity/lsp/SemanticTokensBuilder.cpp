@@ -56,7 +56,7 @@ optional<SemanticTokenType> semanticTokenTypeForType(frontend::Type const* _type
 	case frontend::Type::Category::Contract: return SemanticTokenType::Class;
 	default:
 		DPRINT(fmt::format("semanticTokenTypeForType: unknown category: {}", static_cast<unsigned>(_type->category())));
-		return nullopt;
+		return SemanticTokenType::Type;
 	}
 }
 
@@ -182,9 +182,20 @@ bool SemanticTokensBuilder::visit(frontend::FunctionDefinition const& _node)
 	return true;
 }
 
+bool SemanticTokensBuilder::visit(frontend::ModifierDefinition const& _node)
+{
+	encode(_node.nameLocation(), SemanticTokenType::Modifier);
+	return true;
+}
+
 void SemanticTokensBuilder::endVisit(frontend::Literal const& _literal)
 {
 	encode(_literal.location(), SemanticTokenType::Number);
+}
+
+void SemanticTokensBuilder::endVisit(frontend::StructuredDocumentation const& _documentation)
+{
+	encode(_documentation.location(), SemanticTokenType::Comment);
 }
 
 void SemanticTokensBuilder::endVisit(frontend::Identifier const& _identifier)
@@ -247,6 +258,7 @@ bool SemanticTokensBuilder::visit(frontend::MemberAccess const& _node)
 
 bool SemanticTokensBuilder::visit(frontend::ParameterList const& _node)
 {
+	return true;
 	(void) _node;
 	for (ASTPointer<VariableDeclaration> const& parameter: _node.parameters())
 	{

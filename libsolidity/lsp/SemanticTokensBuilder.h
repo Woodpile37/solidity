@@ -103,7 +103,9 @@ public:
 	bool visit(frontend::EnumValue const&) override;
 	bool visit(frontend::ErrorDefinition const&) override;
 	bool visit(frontend::FunctionDefinition const&) override;
+	bool visit(frontend::ModifierDefinition const&) override;
 	void endVisit(frontend::Literal const&) override;
+	void endVisit(frontend::StructuredDocumentation const&) override;
 	void endVisit(frontend::Identifier const&) override;
 	void endVisit(frontend::IdentifierPath const&) override;
 	bool visit(frontend::MemberAccess const&) override;
