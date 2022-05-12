@@ -1450,9 +1450,9 @@ jobs:
             cp workspace/soljson.js            github/soljson.js
 
             cd github/
-            tar --create github-binaries.tar --file *
+            tar --create ../github-binaries.tar --file *
       - store_artifacts:
-          path: github/
+          path: github-binaries.tar
       - run:
           name: Rename binaries to solc-bin naming convention
           command: |
@@ -1469,9 +1469,9 @@ jobs:
             mv github/soljson.js        "solc-bin/bin/soljson-${full_version}.js"
 
             cd solc-bin/
-            tar --create solc-bin-binaries.tar --file *
+            tar --create ../solc-bin-binaries.tar --file *
       - store_artifacts:
-          path: solc-bin/
+          path: solc-bin-binaries.tar
       - gitter_notify_failure_unless_pr
       - gitter_notify_release_unless_pr
 
