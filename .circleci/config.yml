@@ -1450,7 +1450,7 @@ jobs:
             cp workspace/soljson.js            github/soljson.js
 
             cd github/
-            tar --create ../github-binaries.tar --file *
+            tar --create --file ../github-binaries.tar --file *
       - store_artifacts:
           path: github-binaries.tar
       - run:
@@ -1469,7 +1469,7 @@ jobs:
             mv github/soljson.js        "solc-bin/bin/soljson-${full_version}.js"
 
             cd solc-bin/
-            tar --create ../solc-bin-binaries.tar --file *
+            tar --create --file ../solc-bin-binaries.tar --file *
       - store_artifacts:
           path: solc-bin-binaries.tar
       - gitter_notify_failure_unless_pr
