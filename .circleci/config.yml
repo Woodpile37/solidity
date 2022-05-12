@@ -1597,7 +1597,7 @@ workflows:
 
       # Final artifacts
       - c_release_binaries:
-          <<: *workflow_trigger_on_releases
+          <<: *workflow_trigger_on_tags
           requires:
             - b_ubu_static
             - b_osx
