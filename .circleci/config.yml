@@ -1448,6 +1448,9 @@ jobs:
             cp workspace/build/solc/solc       github/solc-macos
             cp workspace/solc/Release/solc.exe github/solc-windows.exe
             cp workspace/soljson.js            github/soljson.js
+
+            cd github/
+            tar --create github-binaries.tar --file *
       - store_artifacts:
           path: github/
       - run:
@@ -1464,6 +1467,9 @@ jobs:
             mv github/solc-macos        "solc-bin/macosx-amd64/solc-macosx-amd64-${full_version}"
             mv github/solc-windows.exe  "solc-bin/windows-amd64/solc-windows-amd64-${full_version}.exe"
             mv github/soljson.js        "solc-bin/bin/soljson-${full_version}.js"
+
+            cd solc-bin/
+            tar --create solc-bin-binaries.tar --file *
       - store_artifacts:
           path: solc-bin/
       - gitter_notify_failure_unless_pr
