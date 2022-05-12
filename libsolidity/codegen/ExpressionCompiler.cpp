@@ -74,7 +74,16 @@ Type const* closestType(Type const* _type, Type const* _targetType, bool _isShif
 	}
 	else if (auto const* inlineArrayType = dynamic_cast<InlineArrayType const*>(_type))
 	{
-		return TypeProvider::array(DataLocation::Memory, inlineArrayType->componentsCommonMobileType(), inlineArrayType->components().size());
+		Type const& targetBaseType = *dynamic_cast<ArrayType const&>(*_targetType).baseType();
+		Type const* resultBaseType = closestType(
+			inlineArrayType->componentsCommonMobileType(), &targetBaseType, _isShiftOp
+		);
+
+		return TypeProvider::array(
+			DataLocation::Memory,
+			resultBaseType,
+			inlineArrayType->components().size()
+		);
 	}
 	else
 		return _targetType->dataStoredIn(DataLocation::Storage) ? _type->mobileType() : _targetType;
@@ -96,11 +105,9 @@ void ExpressionCompiler::appendStateVariableInitialization(VariableDeclaration c
 	CompilerContext::LocationSetter locationSetter(m_context, _varDecl);
 	_varDecl.value()->accept(*this);
 
-	if (auto const* inlineArray = dynamic_cast<InlineArrayType const*>(type->mobileType()))
+	if (dynamic_cast<InlineArrayType const*>(type))
 	{
-		auto commonMobileType = TypeProvider::array(DataLocation::Memory, inlineArray->componentsCommonMobileType(), inlineArray->components().size());
-		utils().convertType(*type, *commonMobileType);
-		type = commonMobileType;
+
 	}
 	else if (_varDecl.annotation().type->dataStoredIn(DataLocation::Storage))
 	{

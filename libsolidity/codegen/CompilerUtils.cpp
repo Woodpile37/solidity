@@ -1117,6 +1117,8 @@ void CompilerUtils::convertType(
 	case Type::Category::InlineArray:
 	{
 		InlineArrayType const& inlineArray = dynamic_cast<InlineArrayType const&>(_typeOnStack);
+
+
 		ArrayType const& arrayType = dynamic_cast<ArrayType const&>(_targetType);
 
 		solAssert(arrayType.location() == DataLocation::Memory);

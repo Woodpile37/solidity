@@ -16,4 +16,5 @@ contract C {
 // ----
 // f(bytes32): "789" -> "9"
 // g(bytes32): "789" -> 0x35
+// gas legacyOptimized: 132230
 // data(uint256): 0x01 -> "8"

@@ -117,7 +117,9 @@ void ArrayUtils::copyArrayToStorage(ArrayType const& _targetType, ArrayType cons
 				CompilerUtils(_context).computeHashStatic();
 			// stack: target_ref source_ref source_length target_length target_data_pos
 			_context << Instruction::SWAP1;
+			// stack: target_ref source_ref source_length target_data_pos target_length
 			utils.convertLengthToSize(_targetType);
+			// stack: target_ref source_ref source_length target_data_pos target_size
 			_context << Instruction::DUP2 << Instruction::ADD;
 			// stack: target_ref source_ref source_length target_data_pos target_data_end
 			_context << Instruction::SWAP3;

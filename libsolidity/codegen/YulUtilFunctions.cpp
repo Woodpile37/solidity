@@ -1897,45 +1897,39 @@ string YulUtilFunctions::copyArrayToStorageFunction(ArrayType const& _fromType, 
 	});
 }
 
-
 string YulUtilFunctions::copyInlineArrayToStorageFunction(InlineArrayType const& _fromType, ArrayType const& _toType)
 {
 	if (!_toType.isDynamicallySized())
 		solAssert(_fromType.components().size() <= _toType.length(), "");
 
-	string functionName = "copy_inline_array_to_storage_from_" + _fromType.identifier() + "_to_" + _toType.identifier();
+	string const functionName = "copy_inline_array_to_storage_from_" + _fromType.identifier() + "_to_" + _toType.identifier();
 
 	return m_functionCollector.createFunction(functionName, [&](){
 
 		vector<map<string, string>> memberSetValues;
 		unsigned stackItemIndex = 0;
-		for (auto&& [index, type]: _fromType.components() | ranges::views::enumerate)
+		for (Type const* type: _fromType.components())
 		{
 			memberSetValues.emplace_back();
 
-			memberSetValues.back()["setMember"] = Whiskers(R"(
-				{
-					let <memberValues> := <conversionFunction>(<value>)
-					<updateStorageValue>(elementSlot, elementOffset, <memberValues>)
+			memberSetValues.back()["setMember"] = Whiskers(R"({
+				<updateStorageValue>(elementSlot, elementOffset, <value>)
 
-					<?multipleItemsPerSlot>
-						elementOffset := add(elementOffset, <storageStride>)
-						if gt(elementOffset, sub(32, <storageStride>)) {
-							elementOffset := 0
-							elementSlot := add(elementSlot, 1)
-						}
-					<!multipleItemsPerSlot>
-						elementSlot := add(elementSlot, <storageSize>)
-					</multipleItemsPerSlot>
-				}
-			)")
-			("memberValues", suffixedVariableNameList("memberValue_", stackItemIndex, stackItemIndex + _toType.baseType()->stackItems().size()))
-			("conversionFunction", conversionFunction(*type, *_toType.baseType()))
+				<?multipleItemsPerSlot>
+					elementOffset := add(elementOffset, <storageStride>)
+					if gt(elementOffset, sub(32, <storageStride>)) {
+						elementOffset := 0
+						elementSlot := add(elementSlot, 1)
+					}
+				<!multipleItemsPerSlot>
+					elementSlot := add(elementSlot, <storageSize>)
+				</multipleItemsPerSlot>
+			})")
 			("value", suffixedVariableNameList("var_", stackItemIndex, stackItemIndex + type->sizeOnStack()))
 			("multipleItemsPerSlot", _toType.storageStride() <= 16)
 			("storageStride", to_string(_toType.storageStride()))
 			("storageSize", _toType.baseType()->storageSize().str())
-			("updateStorageValue", updateStorageValueFunction(*_fromType.componentsCommonMobileType(), *_toType.baseType()))
+			("updateStorageValue", updateStorageValueFunction(*type, *_toType.baseType()))
 			.render();
 
 			stackItemIndex += type->sizeOnStack();
